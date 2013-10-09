@@ -1,0 +1,56 @@
+html {
+    background-color: black;
+}
+
+#title {
+    color: grey;
+}
+
+#chatty {
+    padding: 8px;
+    border: 2px solid white;
+    background: darkgrey;
+    position:relative;
+}
+
+.circle {
+    border: 1px solid grey;
+    height: 16px;
+    width: 16px;
+    border-radius: 8px;
+    background-color: blue;
+    position: absolute;
+    cursor: pointer;
+}
+
+.preview {
+    width: 400px;
+    font-size: 75%;
+    background-color: black;
+    border: 1px solid white;
+    color: grey;
+    position: relative;
+    margin-top: 32px;
+    padding: 2px;
+    z-index: 1;
+    cursor: auto;
+    display: none;
+}
+
+.preview .previewbar {
+    background-color: #333;
+}
+
+.preview .poster {
+    font-weight: bold;
+    color: white;
+    padding-right: 8px;
+}
+
+.preview .date {
+    font-style: italic;
+}
+
+form {
+    color: grey;
+}
