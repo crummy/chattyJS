@@ -13,7 +13,7 @@ html {
     position:relative;
 }
 
-.circle {
+.post {
     border: 1px solid grey;
     height: 16px;
     width: 16px;
@@ -21,6 +21,18 @@ html {
     background-color: blue;
     position: absolute;
     cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 8px;
+}
+
+.reply {
+    border: 1px solid grey;
+    height: 8px;
+    width: 8px;
+    border-radius: 4px;
+    background-color: pink;
+    position: absolute;
 }
 
 .preview {
