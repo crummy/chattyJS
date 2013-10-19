@@ -78,29 +78,48 @@ $(function () {
         this.damping = 0.3;
     }
 
+
     function Post() {
-        this.bounds = new Vector2(800, 600);
-        this.baseSize = 8;
-        this.hoveredSizeMultiplier = 2;
-        this.selectedSizeMultiplier = 3;
-        this.baseMass = 1;
-        this.attraction = 0.01;
-        this.repulsion = 600;
-        this.damping = 0.7;
-        this.selectedPost = null;
+        this.position = new Vector2(Math.random() * this.bounds.x, Math.random() * this.bounds.y);
+        this.replyList = null;
+        this.replyTree = null;
+        this.position = new Vector2(Math.random() * thread.bounds.x, Math.random() * thread.bounds.y);
+        this.velocity = new Vector2(0, 0);
+        this.isHovered = false;
+        this.div = jQuery('<div/>')
+            .addClass('post')
+            .appendTo('#chatty')
+            .click(function (e) {
+                thread.isHovered = false;
+                Post.prototype.selectedPost = (thread.isSelected() ? null : thread); // a toggle
+                e.preventDefault();
+            }).mouseenter(function () {
+                if (!thread.selected) { thread.isHovered = true; }
+            }).mouseleave(function () {
+                thread.isHovered = false;
+            });
     }
+    Post.prototype.bounds = new Vector2(800, 600);
+    Post.prototype.baseSize = 8;
+    Post.prototype.hoveredSizeMultiplier = 2;
+    Post.prototype.selectedSizeMultiplier = 3;
+    Post.prototype.baseMass = 1;
+    Post.prototype.attraction = 0.01;
+    Post.prototype.repulsion = 600;
+    Post.prototype.damping = 0.7;
+    Post.prototype.selectedPost = null;
     Post.prototype.size = function () {
         var multiplier = (this.isSelected() ? this.selectedSizeMultiplier : (this.isHovered ? this.hoveredSizeMultiplier : 1));
         return this.baseSize * multiplier + Math.sqrt(this.reply_count);
     };
-    Post.prototype..mass = function () {
+    Post.prototype.mass = function () {
         return this.baseMass + 0.1 * Math.sqrt(this.reply_count);
     };
-    Post.prototype..isSelected = function () {
+    Post.prototype.isSelected = function () {
         assert(this !== null);
         return this === this.selectedPost;
     };
-    Post.prototype..backgroundColour = function () {
+    Post.prototype.backgroundColour = function () {
         var bgcolour = "black";
         if (!this.category) {
             bgcolour = "black";
@@ -192,6 +211,7 @@ $(function () {
         }
     };
 
+    // these generic-ish functions should be able to operate on both replies and posts
     var attractTo = function (that) {
         var attraction = new Vector2(0, 0);
         attraction.x += this.mass() * this.attraction * (that.position.x - this.position.x);
@@ -261,23 +281,7 @@ $(function () {
         var posts = [];
         story.threads.forEach(function(thread) {
             $.extend(thread.prototype, Post);
-            thread.replyList = null;
-            thread.replyTree = null;
-            thread.position = new Vector2(Math.random() * thread.bounds.x, Math.random() * thread.bounds.y);
-            thread.velocity = new Vector2(0, 0);
-            thread.isHovered = false;
-            thread.div = jQuery('<div/>')
-                .addClass('post')
-                .appendTo('#chatty')
-                .click(function (e) {
-                    thread.isHovered = false;
-                    Post.prototype.selectedPost = (thread.isSelected() ? null : thread); // a toggle
-                    e.preventDefault();
-                }).mouseenter(function () {
-                    if (!thread.selected) { thread.isHovered = true; }
-                }).mouseleave(function () {
-                    thread.isHovered = false;
-                });
+            // somehow here make thread an object of type "post"
             posts.push(thread);
         });
     }
