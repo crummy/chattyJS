@@ -19,42 +19,23 @@ $(function () {
         }
     }
 
-    // http://stackoverflow.com/a/17369833/281657
-    function setLinePos(x1, y1, x2, y2, element) {
-        if (x2 < x1) {
-            var temp = x1;
-            x1 = x2;
-            x2 = temp;
-            temp = y1;
-            y1 = y2;
-            y2 = temp;
-        }
-        var line = $(element);
-        var length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-        line.css('width', length + "px");
-        var angle = Math.atan((y2 - y1) / (x2 - x1));
-        line.css('top', y1 + 0.5 * length * Math.sin(angle) + "px");
-        line.css('left', x1 - 0.5 * length * (1 - Math.cos(angle)) + "px");
-        line.css('-moz-transform', "rotate(" + angle + "rad)");
-        line.css('-webkit-transform', "rotate(" + angle + "rad)");
-        line.css('-o-transform', "rotate(" + angle + "rad)");
-
-    }
-
     // Applies a force-based calculation to every post.
     // mostly thanks to http://blog.ivank.net/force-based-graph-drawing-in-as3.html
-    function forceCalculationLoop(posts) {
+    function postCalculationLoop(posts) {
         posts.forEach(function (postA) {
-            var netVelocity = new Vector2(0 ,0);
+            var netVelocity = new Vector2(0, 0);
             posts.forEach(function(postB) {
                 if (postA === postB) {
                     return; // no need to compare a node to itself
                 }
-                var repulsion = repulseFrom.call(postA, postB),
+                var repulsion = new Vector2(0, 0),
                     attraction = new Vector2(0, 0),
                     gravity = applyGravity.call(postA, postB);
-                if (postA.data.category === postB.data.category) {
+                if (postA.category === postB.category) {
                     attraction = attractTo.call(postA, postB);
+                }
+                if (!postA.isSelected()) {
+                    repulsion = repulseFrom.call(postA, postB);
                 }
                 netVelocity.x += repulsion.x + attraction.x + gravity.x;
                 netVelocity.y += repulsion.y + attraction.y + gravity.y;
@@ -91,146 +72,108 @@ $(function () {
         });
     }
 
-    function Post(data) {
-        var postRef = this;
-        this.replyList = null;
-        this.replyTree = null;
-        this.data = data;
-        this.position = new Vector2(Math.random() * this.bounds.x, Math.random() * this.bounds.y);
-        this.velocity = new Vector2(0, 0);
-        this.isHovered = false;
-        this.div = jQuery('<div/>')
-            .addClass('post')
-            .appendTo('#chatty')
-            .click(function (e) {
-                postRef.isHovered = false;
-                Post.prototype.selectedPost = (postRef.isSelected() ? null : postRef); // a toggle
-                e.preventDefault();
-            }).mouseenter(function () {
-                if (!postRef.selected) { postRef.isHovered = true; }
-            }).mouseleave(function () {
-                postRef.isHovered = false;
-            });
+    function Entity() {
+        this.mass = function () {
+            return 1;
+        };
+        this.size = function () {
+            return 4;
+        };
+        this.gravityAttraction = 0.01;
     }
 
-    Post.prototype.bounds = new Vector2(800, 600);
-    Post.prototype.baseSize = 8;
-    Post.prototype.hoveredSizeMultiplier = 2;
-    Post.prototype.selectedSizeMultiplier = 3;
-    Post.prototype.baseMass = 1;
-    Post.prototype.attraction = 0.01;
-    Post.prototype.repulsion = 600;
-    Post.prototype.damping = 0.7;
-    Post.prototype.selectedPost = null;
-    Post.prototype.size = function () {
-        var multiplier = (this.isSelected() ? this.selectedSizeMultiplier : (this.isHovered ? this.hoveredSizeMultiplier : 1));
-        return this.baseSize * multiplier + Math.sqrt(this.data.reply_count);
-    };
-    Post.prototype.mass = function () {
-        return this.baseMass + 0.1 * Math.sqrt(this.data.reply_count);
-    };
-    Post.prototype.isSelected = function () {
-        assert(this !== null);
-        return this === this.selectedPost;
-    };
-    Post.prototype.backgroundColour = function () {
-        var bgcolour = "black";
-        if (!this.data) {
-            bgcolour = "black";
-        } else if (this.data.category === "ontopic") {
-            bgcolour = "white";
-        } else if (this.data.category === "offtopic") {
-            bgcolour = "lightgrey";
-        } else if (this.data.category === "nws") {
-            bgcolour = "red";
-        } else if (this.data.category === "political") {
-            bgcolour = "blue";
-        } else if (this.data.category === "stupid") {
-            bgcolour = "yellow";
-        } else if (this.data.category === "informative") {
-            bgcolour = "green";
-        }
-        return bgcolour;
-    };
-    Post.prototype.getOpacity = function () {
-        var isSelected = this.isSelected(),
-            noneAreSelected = this.selectedPost === null;
-        return ((noneAreSelected || isSelected) ? 1.0 : 0.5);
-    };
-    var attractTo = function (that) {
-        var attraction = new Vector2(0, 0);
-        if (this.constructor === Post) {
-            attraction.x += this.mass() * this.attraction * (that.position.x - this.position.x);
-            attraction.y += this.mass() * this.attraction * (that.position.y - this.position.y);
-        } else {
-            attraction.x += this.attraction * (that.position.x - this.position.x);
-            attraction.y += this.attraction * (that.position.y - this.position.y);
-        }
-        return attraction;
-    };
-    var repulseFrom = function (that) {
-        var repulsion = new Vector2(0, 0),
-            rsq = Math.pow(this.position.x - that.position.x, 2) + Math.pow(this.position.y - that.position.y, 2);
-        if (this.constructor === Post) {
-            if (rsq === 0) { rsq = 0.00001; } // careful - don't divide by zero!
-            if (this.isSelected()) { return repulsion; } // returning no repulsion should send cell to about the center
-            repulsion.x = (this.repulsion * (this.position.x - that.position.x) / rsq);
-            repulsion.y = (this.repulsion * (this.position.y - that.position.y) / rsq);
-            return repulsion;
-        } else {
-            if (rsq === 0) { rsq = 0.00001; } // careful - don't divide by zero!
-            repulsion.x = (this.repulsion * (this.position.x - that.position.x) / rsq);
-            repulsion.y = (this.repulsion * (this.position.y - that.position.y) / rsq);
-            return repulsion;
-        }
-    };
-    var applyGravity = function () {
-        var centerOfGravity = new Vector2(this.bounds.x / 2, this.bounds.y / 2),
-            gravity = new Vector2(0, 0);
-        gravity.x = this.attraction * (centerOfGravity.x - this.position.x);
-        gravity.y = this.attraction * (centerOfGravity.y - this.position.y);
-        return gravity;
-    };
-    Post.prototype.update = function (velocity) {
-        if (!this.isHovered) { // as long as we aren't mouseovered,
-            // move to new position, apply some damping to encourage stabilization,
-            this.position.x += velocity.x * this.damping;
-            this.position.y += velocity.y * this.damping;
+    function Reply() {
+        this.attraction = 0.01;
+        this.repulsion = 600;
+        this.damping = 0.3;
+    }
+    Reply.prototype = new Entity();
 
-            // and finally ensure we don't go out of bounds.
-            if (this.position.x < 0) { this.position.x = 0; this.velocity.x = 0; }
-            if (this.position.x > this.bounds.x) { this.position.x = this.bounds.x; this.velocity.x = 0; }
-            if (this.position.y < 0) { this.position.y = 0; this.velocity.y = 0; }
-            if (this.position.y > this.bounds.y) { this.position.y = this.bounds.y; this.velocity.y = 0; }
-        }
+    function Post() {
+        this.bounds = new Vector2(800, 600);
+        this.baseSize = 8;
+        this.hoveredSizeMultiplier = 2;
+        this.selectedSizeMultiplier = 3;
+        this.baseMass = 1;
+        this.attraction = 0.01;
+        this.repulsion = 600;
+        this.damping = 0.7;
+        this.selectedPost = null;
+        this.size = function () {
+            var multiplier = (this.isSelected() ? this.selectedSizeMultiplier : (this.isHovered ? this.hoveredSizeMultiplier : 1));
+            return this.baseSize * multiplier + Math.sqrt(this.reply_count);
+        };
+        this.mass = function () {
+            return this.baseMass + 0.1 * Math.sqrt(this.reply_count);
+        };
+        this.isSelected = function () {
+            assert(this !== null);
+            return this === this.selectedPost;
+        };
+        this.backgroundColour = function () {
+            var bgcolour = "black";
+            if (!this.category) {
+                bgcolour = "black";
+            } else if (this.category === "ontopic") {
+                bgcolour = "white";
+            } else if (this.category === "offtopic") {
+                bgcolour = "lightgrey";
+            } else if (this.category === "nws") {
+                bgcolour = "red";
+            } else if (this.category === "political") {
+                bgcolour = "blue";
+            } else if (this.category === "stupid") {
+                bgcolour = "yellow";
+            } else if (this.category === "informative") {
+                bgcolour = "green";
+            }
+            return bgcolour;
+        };
+        this.getOpacity = function () {
+            var isSelected = this.isSelected(),
+                noneAreSelected = this.selectedPost === null;
+            return ((noneAreSelected || isSelected) ? 1.0 : 0.5);
+        };
+        this.update = function (velocity) {
+            if (!this.isHovered) { // as long as we aren't mouseovered,
+                // move to new position, apply some damping to encourage stabilization,
+                this.position.x += velocity.x * this.damping;
+                this.position.y += velocity.y * this.damping;
 
-        // redraw
-        $(this.div).css({
-            'top':  this.position.y,
-            'left': this.position.x,
-            'background-color': this.backgroundColour(),
-            'width': this.size(),
-            'height': this.size()
-        })
-            .fadeTo(0, this.getOpacity());
-        this.updateReplies();
-        return this;
-    };
-    Post.prototype.updateReplies = function () {
-        if (this.isSelected()) {
+                // and finally ensure we don't go out of bounds.
+                if (this.position.x < 0) { this.position.x = 0; this.velocity.x = 0; }
+                if (this.position.x > this.bounds.x) { this.position.x = this.bounds.x; this.velocity.x = 0; }
+                if (this.position.y < 0) { this.position.y = 0; this.velocity.y = 0; }
+                if (this.position.y > this.bounds.y) { this.position.y = this.bounds.y; this.velocity.y = 0; }
+            }
+
+            // redraw
+            $(this.div).css({
+                'top':  this.position.y,
+                'left': this.position.x,
+                'background-color': this.backgroundColour(),
+                'width': this.size(),
+                'height': this.size()
+            })
+                .fadeTo(0, this.getOpacity());
+
+            if (this.isSelected()) {
+                this.updateReplies();
+            }
+            return this;
+        };
+        this.updateReplies = function () {
             if (this.replyList === null) {
                 this.replyList = [];
                 winchatty(
-                    ["ChattyService.getThreadTree", this.data.id],
+                    ["ChattyService.getThreadTree", this.id],
                     getReplies,
                     function (error) {
                         window.alert("Failed to access winchatty database: " + error);
                     }
                 );
             } else if (this.replyList.length !== 0) {
-                var replyList = this.replyList,
-                    rootPost = this.replyTree,
-                    postPosition = this.position;
+                var replyList = this.replyList;
                 replyList.forEach(function (replyA) {
                     var netVelocity = new Vector2(0, 0);
                     replyList.forEach(function (replyB) {
@@ -245,8 +188,8 @@ $(function () {
                         netVelocity.x += repulsion.x + attraction.x;
                         netVelocity.y += repulsion.y + attraction.y;
                     });
-                    if (replyA === rootPost) {
-                        replyA.position = postPosition;
+                    if (replyA === this.replyTree) { // if root post
+                        replyA.position = this.position;
                     } else {
                         replyA.position.x += netVelocity.x * replyA.damping;
                         replyA.position.y += netVelocity.y * replyA.damping;
@@ -255,13 +198,35 @@ $(function () {
                         'top':  replyA.position.y,
                         'left': replyA.position.x
                     });
-                    if (replyA.parent) {
-                        setLinePos(replyA.position.x, replyA.position.y, replyA.parent.position.x, replyA.parent.position.y, replyA.line);
-                    }
                 });
             }
-        }
+        };
+    }
+    Post.prototype = new Entity();
+
+    var attractTo = function (that) {
+        var attraction = new Vector2(0, 0);
+        attraction.x += this.mass() * this.attraction * (that.position.x - this.position.x);
+        attraction.y += this.mass() * this.attraction * (that.position.y - this.position.y);
+        return attraction;
     };
+    var repulseFrom = function (that) {
+        var repulsion = new Vector2(0, 0),
+            rsq = Math.pow(this.position.x - that.position.x, 2) + Math.pow(this.position.y - that.position.y, 2);
+        if (rsq === 0) { rsq = 0.00001; } // careful - don't divide by zero!
+        repulsion.x = (this.repulsion * (this.position.x - that.position.x) / rsq);
+        repulsion.y = (this.repulsion * (this.position.y - that.position.y) / rsq);
+        return repulsion;
+    };
+    var applyGravity = function () {
+        var centerOfGravity = new Vector2(this.bounds.x / 2, this.bounds.y / 2),
+            gravity = new Vector2(0, 0);
+        gravity.x = this.gravityAttraction * (centerOfGravity.x - this.position.x);
+        gravity.y = this.gravityAttraction * (centerOfGravity.y - this.position.y);
+        return gravity;
+    };
+
+
 
     // Because I'm bad at Javascript scoping, I couldn't figure out how to put this in an anonymous function
     // inside the winchatty call in Post.prototype.updateReplies, and I couldn't figure out how to have it
@@ -272,12 +237,10 @@ $(function () {
         var stack = [],
             replies = tree.replies,
             root = tree.replies[0];
+        $.extend(root, Reply);
         root.children = [];
         root.position = new Vector2(0, 0);
         root.velocity = new Vector2(0, 0);
-        root.attraction = 0.01;
-        root.repulsion = 1;
-        root.damping = 0.9;
         root.div = jQuery('<div/>')
             .addClass('reply')
             .appendTo('#chatty');
@@ -285,18 +248,13 @@ $(function () {
         for (var i = 1; i < replies.length; i++) { // start at i=1 deliberately to skip root, handled above
             var reply = replies[i],
                 delta = reply.depth - stack.length;
+            $.extend(reply, Reply);
             reply.children = [];
             reply.div = jQuery('<div/>')
                 .addClass('reply')
                 .appendTo('#chatty');
-            reply.line = jQuery('<div/>')
-                .addClass('line')
-                .appendTo('#chatty');
             reply.position = new Vector2(Math.random() * Post.prototype.bounds.x, Math.random() * Post.prototype.bounds.y);
             reply.velocity = new Vector2(0, 0);
-            reply.attraction = root.attraction;
-            reply.repulsion = root.repulsion;
-            reply.damping = root.damping;
             if (delta > 0) {
                 assert(delta === 1);
                 stack.push(stack.front().children.front());
@@ -306,11 +264,36 @@ $(function () {
                 delta++;
             }
             stack.front().children.push(reply);
-            reply.parent = stack.front();
         }
         Post.prototype.selectedPost.replyList = replies;
         Post.prototype.selectedPost.replyTree = root;
-    };
+    }
+
+    function getThreads(story) {
+        var posts = [];
+        story.threads.forEach(function(thread) {
+            $.extend(thread.prototype, Post);
+            var plain = $.isPlainObject(thread);
+            thread.replyList = null;
+            thread.replyTree = null;
+            thread.position = new Vector2(Math.random() * thread.bounds.x, Math.random() * thread.bounds.y);
+            thread.velocity = new Vector2(0, 0);
+            thread.isHovered = false;
+            thread.div = jQuery('<div/>')
+                .addClass('post')
+                .appendTo('#chatty')
+                .click(function (e) {
+                    thread.isHovered = false;
+                    Post.prototype.selectedPost = (thread.isSelected() ? null : thread); // a toggle
+                    e.preventDefault();
+                }).mouseenter(function () {
+                    if (!thread.selected) { thread.isHovered = true; }
+                }).mouseleave(function () {
+                    thread.isHovered = false;
+                });
+            posts.push(thread);
+        });
+    }
 
     $('#title').text("Loading...");
     winchatty(
@@ -321,12 +304,11 @@ $(function () {
             winchatty(
                 ["ChattyService.getStory", story_id, 1],
                 function (story) {
-                    var posts = [];
-                    story.threads.forEach(function(thread) {
-                        posts.push(new Post(thread));
-                    });
+                    var posts = getThreads(story);
                     $('#title').text(title + ": " + story.story_name);
-                    window.setInterval(function () { forceCalculationLoop(posts); }, framerate);
+                    window.setInterval(function () {
+                        postCalculationLoop(posts);
+                    }, framerate);
                 },
                 function (error) {
                     window.alert("Failed to access winchatty database: " + error);
@@ -338,10 +320,10 @@ $(function () {
         }
     );
 
-    $('#chatty').css({
-        "height": Post.prototype.bounds.y,
-        "width": Post.prototype.bounds.x
-    });
+    /*$('#chatty').css({
+        "height": Post.bounds.y,
+        "width": Post.bounds.x
+    });*/
 
     $('input[name=repulsion]').val(Post.prototype.repulsion);
     $('input[name=attraction]').val(Post.prototype.attraction);
