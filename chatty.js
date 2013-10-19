@@ -19,6 +19,28 @@ $(function () {
         }
     }
 
+    // http://stackoverflow.com/a/17369833/281657
+    function setLinePos(x1, y1, x2, y2, element) {
+        if (x2 < x1) {
+            var temp = x1;
+            x1 = x2;
+            x2 = temp;
+            temp = y1;
+            y1 = y2;
+            y2 = temp;
+        }
+        var line = $(element);
+        var length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        line.css('width', length + "px");
+        var angle = Math.atan((y2 - y1) / (x2 - x1));
+        line.css('top', y1 + 0.5 * length * Math.sin(angle) + "px");
+        line.css('left', x1 - 0.5 * length * (1 - Math.cos(angle)) + "px");
+        line.css('-moz-transform', "rotate(" + angle + "rad)");
+        line.css('-webkit-transform', "rotate(" + angle + "rad)");
+        line.css('-o-transform', "rotate(" + angle + "rad)");
+
+    }
+
     // Applies a force-based calculation to every post.
     // mostly thanks to http://blog.ivank.net/force-based-graph-drawing-in-as3.html
     function forceCalculationLoop(posts) {
@@ -137,7 +159,7 @@ $(function () {
     };
     var attractTo = function (that) {
         var attraction = new Vector2(0, 0);
-        if (this.constructor == Post) {
+        if (this.constructor === Post) {
             attraction.x += this.mass() * this.attraction * (that.position.x - this.position.x);
             attraction.y += this.mass() * this.attraction * (that.position.y - this.position.y);
         } else {
@@ -206,7 +228,9 @@ $(function () {
                     }
                 );
             } else if (this.replyList.length !== 0) {
-                var replyList = this.replyList;
+                var replyList = this.replyList,
+                    rootPost = this.replyTree,
+                    postPosition = this.position;
                 replyList.forEach(function (replyA) {
                     var netVelocity = new Vector2(0, 0);
                     replyList.forEach(function (replyB) {
@@ -221,8 +245,8 @@ $(function () {
                         netVelocity.x += repulsion.x + attraction.x;
                         netVelocity.y += repulsion.y + attraction.y;
                     });
-                    if (replyA === this.replyTree) { // if root post
-                        replyA.position = this.position;
+                    if (replyA === rootPost) {
+                        replyA.position = postPosition;
                     } else {
                         replyA.position.x += netVelocity.x * replyA.damping;
                         replyA.position.y += netVelocity.y * replyA.damping;
@@ -231,6 +255,9 @@ $(function () {
                         'top':  replyA.position.y,
                         'left': replyA.position.x
                     });
+                    if (replyA.parent) {
+                        setLinePos(replyA.position.x, replyA.position.y, replyA.parent.position.x, replyA.parent.position.y, replyA.line);
+                    }
                 });
             }
         }
@@ -249,8 +276,11 @@ $(function () {
         root.position = new Vector2(0, 0);
         root.velocity = new Vector2(0, 0);
         root.attraction = 0.01;
-        root.repulsion = 600;
-        root.damping = 0.3;
+        root.repulsion = 1;
+        root.damping = 0.9;
+        root.div = jQuery('<div/>')
+            .addClass('reply')
+            .appendTo('#chatty');
         stack.push(root);
         for (var i = 1; i < replies.length; i++) { // start at i=1 deliberately to skip root, handled above
             var reply = replies[i],
@@ -259,11 +289,14 @@ $(function () {
             reply.div = jQuery('<div/>')
                 .addClass('reply')
                 .appendTo('#chatty');
+            reply.line = jQuery('<div/>')
+                .addClass('line')
+                .appendTo('#chatty');
             reply.position = new Vector2(Math.random() * Post.prototype.bounds.x, Math.random() * Post.prototype.bounds.y);
             reply.velocity = new Vector2(0, 0);
-            reply.attraction = 0.01;
-            reply.repulsion = 600;
-            reply.damping = 0.3;
+            reply.attraction = root.attraction;
+            reply.repulsion = root.repulsion;
+            reply.damping = root.damping;
             if (delta > 0) {
                 assert(delta === 1);
                 stack.push(stack.front().children.front());
@@ -273,6 +306,7 @@ $(function () {
                 delta++;
             }
             stack.front().children.push(reply);
+            reply.parent = stack.front();
         }
         Post.prototype.selectedPost.replyList = replies;
         Post.prototype.selectedPost.replyTree = root;
