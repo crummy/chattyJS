@@ -72,22 +72,11 @@ $(function () {
         });
     }
 
-    function Entity() {
-        this.mass = function () {
-            return 1;
-        };
-        this.size = function () {
-            return 4;
-        };
-        this.gravityAttraction = 0.01;
-    }
-
     function Reply() {
         this.attraction = 0.01;
         this.repulsion = 600;
         this.damping = 0.3;
     }
-    Reply.prototype = new Entity();
 
     function Post() {
         this.bounds = new Vector2(800, 600);
@@ -99,110 +88,109 @@ $(function () {
         this.repulsion = 600;
         this.damping = 0.7;
         this.selectedPost = null;
-        this.size = function () {
-            var multiplier = (this.isSelected() ? this.selectedSizeMultiplier : (this.isHovered ? this.hoveredSizeMultiplier : 1));
-            return this.baseSize * multiplier + Math.sqrt(this.reply_count);
-        };
-        this.mass = function () {
-            return this.baseMass + 0.1 * Math.sqrt(this.reply_count);
-        };
-        this.isSelected = function () {
-            assert(this !== null);
-            return this === this.selectedPost;
-        };
-        this.backgroundColour = function () {
-            var bgcolour = "black";
-            if (!this.category) {
-                bgcolour = "black";
-            } else if (this.category === "ontopic") {
-                bgcolour = "white";
-            } else if (this.category === "offtopic") {
-                bgcolour = "lightgrey";
-            } else if (this.category === "nws") {
-                bgcolour = "red";
-            } else if (this.category === "political") {
-                bgcolour = "blue";
-            } else if (this.category === "stupid") {
-                bgcolour = "yellow";
-            } else if (this.category === "informative") {
-                bgcolour = "green";
-            }
-            return bgcolour;
-        };
-        this.getOpacity = function () {
-            var isSelected = this.isSelected(),
-                noneAreSelected = this.selectedPost === null;
-            return ((noneAreSelected || isSelected) ? 1.0 : 0.5);
-        };
-        this.update = function (velocity) {
-            if (!this.isHovered) { // as long as we aren't mouseovered,
-                // move to new position, apply some damping to encourage stabilization,
-                this.position.x += velocity.x * this.damping;
-                this.position.y += velocity.y * this.damping;
-
-                // and finally ensure we don't go out of bounds.
-                if (this.position.x < 0) { this.position.x = 0; this.velocity.x = 0; }
-                if (this.position.x > this.bounds.x) { this.position.x = this.bounds.x; this.velocity.x = 0; }
-                if (this.position.y < 0) { this.position.y = 0; this.velocity.y = 0; }
-                if (this.position.y > this.bounds.y) { this.position.y = this.bounds.y; this.velocity.y = 0; }
-            }
-
-            // redraw
-            $(this.div).css({
-                'top':  this.position.y,
-                'left': this.position.x,
-                'background-color': this.backgroundColour(),
-                'width': this.size(),
-                'height': this.size()
-            })
-                .fadeTo(0, this.getOpacity());
-
-            if (this.isSelected()) {
-                this.updateReplies();
-            }
-            return this;
-        };
-        this.updateReplies = function () {
-            if (this.replyList === null) {
-                this.replyList = [];
-                winchatty(
-                    ["ChattyService.getThreadTree", this.id],
-                    getReplies,
-                    function (error) {
-                        window.alert("Failed to access winchatty database: " + error);
-                    }
-                );
-            } else if (this.replyList.length !== 0) {
-                var replyList = this.replyList;
-                replyList.forEach(function (replyA) {
-                    var netVelocity = new Vector2(0, 0);
-                    replyList.forEach(function (replyB) {
-                        if (replyA === replyB) {
-                            return;
-                        }
-                        var repulsion = repulseFrom.call(replyA, replyB),
-                            attraction = new Vector2(0, 0);
-                        if ($.inArray(replyB, replyA.children) > -1 || $.inArray(replyA, replyB.children) > -1) {
-                            attraction = attractTo.call(replyA, replyB);
-                        }
-                        netVelocity.x += repulsion.x + attraction.x;
-                        netVelocity.y += repulsion.y + attraction.y;
-                    });
-                    if (replyA === this.replyTree) { // if root post
-                        replyA.position = this.position;
-                    } else {
-                        replyA.position.x += netVelocity.x * replyA.damping;
-                        replyA.position.y += netVelocity.y * replyA.damping;
-                    }
-                    $(replyA.div).css({
-                        'top':  replyA.position.y,
-                        'left': replyA.position.x
-                    });
-                });
-            }
-        };
     }
-    Post.prototype = new Entity();
+    Post.prototype.size = function () {
+        var multiplier = (this.isSelected() ? this.selectedSizeMultiplier : (this.isHovered ? this.hoveredSizeMultiplier : 1));
+        return this.baseSize * multiplier + Math.sqrt(this.reply_count);
+    };
+    Post.prototype..mass = function () {
+        return this.baseMass + 0.1 * Math.sqrt(this.reply_count);
+    };
+    Post.prototype..isSelected = function () {
+        assert(this !== null);
+        return this === this.selectedPost;
+    };
+    Post.prototype..backgroundColour = function () {
+        var bgcolour = "black";
+        if (!this.category) {
+            bgcolour = "black";
+        } else if (this.category === "ontopic") {
+            bgcolour = "white";
+        } else if (this.category === "offtopic") {
+            bgcolour = "lightgrey";
+        } else if (this.category === "nws") {
+            bgcolour = "red";
+        } else if (this.category === "political") {
+            bgcolour = "blue";
+        } else if (this.category === "stupid") {
+            bgcolour = "yellow";
+        } else if (this.category === "informative") {
+            bgcolour = "green";
+        }
+        return bgcolour;
+    };
+    Post.prototype.getOpacity = function () {
+        var isSelected = this.isSelected(),
+            noneAreSelected = this.selectedPost === null;
+        return ((noneAreSelected || isSelected) ? 1.0 : 0.5);
+    };
+    Post.prototype.update = function (velocity) {
+        if (!this.isHovered) { // as long as we aren't mouseovered,
+            // move to new position, apply some damping to encourage stabilization,
+            this.position.x += velocity.x * this.damping;
+            this.position.y += velocity.y * this.damping;
+
+            // and finally ensure we don't go out of bounds.
+            if (this.position.x < 0) { this.position.x = 0; this.velocity.x = 0; }
+            if (this.position.x > this.bounds.x) { this.position.x = this.bounds.x; this.velocity.x = 0; }
+            if (this.position.y < 0) { this.position.y = 0; this.velocity.y = 0; }
+            if (this.position.y > this.bounds.y) { this.position.y = this.bounds.y; this.velocity.y = 0; }
+        }
+
+        // redraw
+        $(this.div).css({
+            'top':  this.position.y,
+            'left': this.position.x,
+            'background-color': this.backgroundColour(),
+            'width': this.size(),
+            'height': this.size()
+        })
+            .fadeTo(0, this.getOpacity());
+
+        if (this.isSelected()) {
+            this.updateReplies();
+        }
+        return this;
+    };
+    Post.prototype.updateReplies = function () {
+        if (this.replyList === null) {
+            this.replyList = [];
+            winchatty(
+                ["ChattyService.getThreadTree", this.id],
+                getReplies,
+                function (error) {
+                    window.alert("Failed to access winchatty database: " + error);
+                }
+            );
+        } else if (this.replyList.length !== 0) {
+            var replyList = this.replyList;
+            replyList.forEach(function (replyA) {
+                var netVelocity = new Vector2(0, 0);
+                replyList.forEach(function (replyB) {
+                    if (replyA === replyB) {
+                        return;
+                    }
+                    var repulsion = repulseFrom.call(replyA, replyB),
+                        attraction = new Vector2(0, 0);
+                    if ($.inArray(replyB, replyA.children) > -1 || $.inArray(replyA, replyB.children) > -1) {
+                        attraction = attractTo.call(replyA, replyB);
+                    }
+                    netVelocity.x += repulsion.x + attraction.x;
+                    netVelocity.y += repulsion.y + attraction.y;
+                });
+                if (replyA === this.replyTree) { // if root post
+                    replyA.position = this.position;
+                } else {
+                    replyA.position.x += netVelocity.x * replyA.damping;
+                    replyA.position.y += netVelocity.y * replyA.damping;
+                }
+                $(replyA.div).css({
+                    'top':  replyA.position.y,
+                    'left': replyA.position.x
+                });
+            });
+        }
+    };
 
     var attractTo = function (that) {
         var attraction = new Vector2(0, 0);
@@ -273,7 +261,6 @@ $(function () {
         var posts = [];
         story.threads.forEach(function(thread) {
             $.extend(thread.prototype, Post);
-            var plain = $.isPlainObject(thread);
             thread.replyList = null;
             thread.replyTree = null;
             thread.position = new Vector2(Math.random() * thread.bounds.x, Math.random() * thread.bounds.y);
