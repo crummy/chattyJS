@@ -77,26 +77,29 @@ $(function () {
         this.repulsion = 600;
         this.damping = 0.3;
     }
+    Reply.prototype.mass = function () {
+        return 1;
+    }
 
 
     function Post() {
+        var postRef = this;
         this.position = new Vector2(Math.random() * this.bounds.x, Math.random() * this.bounds.y);
         this.replyList = null;
         this.replyTree = null;
-        this.position = new Vector2(Math.random() * thread.bounds.x, Math.random() * thread.bounds.y);
         this.velocity = new Vector2(0, 0);
         this.isHovered = false;
         this.div = jQuery('<div/>')
             .addClass('post')
             .appendTo('#chatty')
             .click(function (e) {
-                thread.isHovered = false;
-                Post.prototype.selectedPost = (thread.isSelected() ? null : thread); // a toggle
+                postRef.isHovered = false;
+                Post.prototype.selectedPost = (postRef.isSelected() ? null : postRef); // a toggle
                 e.preventDefault();
             }).mouseenter(function () {
-                if (!thread.selected) { thread.isHovered = true; }
+                if (!postRef.selected) { postRef.isHovered = true; }
             }).mouseleave(function () {
-                thread.isHovered = false;
+                postRef.isHovered = false;
             });
     }
     Post.prototype.bounds = new Vector2(800, 600);
@@ -229,8 +232,8 @@ $(function () {
     var applyGravity = function () {
         var centerOfGravity = new Vector2(this.bounds.x / 2, this.bounds.y / 2),
             gravity = new Vector2(0, 0);
-        gravity.x = this.gravityAttraction * (centerOfGravity.x - this.position.x);
-        gravity.y = this.gravityAttraction * (centerOfGravity.y - this.position.y);
+        gravity.x = this.attraction * (centerOfGravity.x - this.position.x);
+        gravity.y = this.attraction * (centerOfGravity.y - this.position.y);
         return gravity;
     };
 
@@ -280,10 +283,11 @@ $(function () {
     function getThreads(story) {
         var posts = [];
         story.threads.forEach(function(thread) {
-            $.extend(thread.prototype, Post);
-            // somehow here make thread an object of type "post"
-            posts.push(thread);
+            var newPost = new Post();
+            $.extend(newPost, thread);
+            posts.push(newPost);
         });
+        return posts;
     }
 
     $('#title').text("Loading...");
@@ -311,10 +315,10 @@ $(function () {
         }
     );
 
-    /*$('#chatty').css({
-        "height": Post.bounds.y,
-        "width": Post.bounds.x
-    });*/
+    $('#chatty').css({
+        "height": Post.prototype.bounds.y,
+        "width": Post.prototype.bounds.x
+    });
 
     $('input[name=repulsion]').val(Post.prototype.repulsion);
     $('input[name=attraction]').val(Post.prototype.attraction);
