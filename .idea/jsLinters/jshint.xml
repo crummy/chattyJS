@@ -23,7 +23,7 @@
     <option boss="false" />
     <option debug="false" />
     <option eqnull="false" />
-    <option es5="false" />
+    <option es5="true" />
     <option esnext="false" />
     <option evil="false" />
     <option expr="false" />
@@ -46,9 +46,9 @@
     <option validthis="false" />
     <option browser="true" />
     <option couch="false" />
-    <option devel="false" />
+    <option devel="true" />
     <option dojo="false" />
-    <option jquery="false" />
+    <option jquery="true" />
     <option mootools="false" />
     <option node="false" />
     <option nonstandard="false" />

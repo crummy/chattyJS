@@ -1,12 +1,16 @@
 html {
     background-color: black;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
 }
 
-#title {
+#title, h1 {
     color: grey;
 }
 
-#chatty {
+#chatty, canvas {
     margin: 0 auto;
     padding: 8px;
     border: 2px solid white;
