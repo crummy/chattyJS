@@ -73,10 +73,16 @@ $(function () {
     }
 
     function Reply() {
-        this.attraction = 0.01;
-        this.repulsion = 600;
-        this.damping = 0.3;
+        this.children = [];
+        this.position = new Vector2(Math.random() * Post.prototype.bounds.x, Math.random() * Post.prototype.bounds.y);
+        this.velocity = new Vector2(0, 0);
+        this.div = jQuery('<div/>')
+            .addClass('reply')
+            .appendTo('#chatty');
     }
+    Reply.prototype.attraction = 0.01;
+    Reply.prototype.repulsion = 600;
+    Reply.prototype.damping = 0.3;
     Reply.prototype.mass = function () {
         return 1;
     }
@@ -246,26 +252,14 @@ $(function () {
     function getReplies(tree) {
         // http://programmers.stackexchange.com/questions/214227/
         var stack = [],
-            replies = tree.replies,
-            root = tree.replies[0];
-        $.extend(root, Reply);
-        root.children = [];
-        root.position = new Vector2(0, 0);
-        root.velocity = new Vector2(0, 0);
-        root.div = jQuery('<div/>')
-            .addClass('reply')
-            .appendTo('#chatty');
+            replies = [],
+            root = new Reply();
+        $.extend(root, tree.replies[0]);
         stack.push(root);
-        for (var i = 1; i < replies.length; i++) { // start at i=1 deliberately to skip root, handled above
-            var reply = replies[i],
-                delta = reply.depth - stack.length;
-            $.extend(reply, Reply);
-            reply.children = [];
-            reply.div = jQuery('<div/>')
-                .addClass('reply')
-                .appendTo('#chatty');
-            reply.position = new Vector2(Math.random() * Post.prototype.bounds.x, Math.random() * Post.prototype.bounds.y);
-            reply.velocity = new Vector2(0, 0);
+        for (var i = 1; i < tree.replies.length; i++) { // start at i=1 deliberately to skip root, handled above
+            var reply = new Reply(),
+                delta = tree.replies[i].depth - stack.length;
+            $.extend(reply, tree.replies[i]);
             if (delta > 0) {
                 assert(delta === 1);
                 stack.push(stack.front().children.front());
@@ -274,7 +268,8 @@ $(function () {
                 stack.pop();
                 delta++;
             }
-            stack.front().children.push(reply);
+            stack.front().children.push(reply); // build the tree
+            replies.push(reply); // build the list
         }
         Post.prototype.selectedPost.replyList = replies;
         Post.prototype.selectedPost.replyTree = root;
