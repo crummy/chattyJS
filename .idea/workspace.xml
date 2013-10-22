@@ -42,7 +42,7 @@
       <file leaf-file-name="winchatty.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/winchatty.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="138" column="19" selection-start="5646" selection-end="5646" vertical-scroll-proportion="0.0" vertical-offset="2063" max-vertical-offset="5763">
+            <state line="143" column="6" selection-start="5837" selection-end="5837" vertical-scroll-proportion="0.0" vertical-offset="2063" max-vertical-offset="5763">
               <folding />
             </state>
           </provider>
@@ -69,7 +69,7 @@
       <file leaf-file-name="chatty.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/chatty.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="53" selection-start="2769" selection-end="2769" vertical-scroll-proportion="0.42666668" vertical-offset="789" max-vertical-offset="5933">
+            <state line="138" column="43" selection-start="5228" selection-end="5228" vertical-scroll-proportion="0.5288889" vertical-offset="1870" max-vertical-offset="6239">
               <folding />
             </state>
           </provider>
@@ -310,7 +310,11 @@
       <created>1382468055153</created>
       <updated>1382468055153</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Fixed replies. All looks pretty good now.">
+      <created>1382472420088</created>
+      <updated>1382472420088</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -374,7 +378,8 @@
     <MESSAGE value="Fixed Post object. Returned functionality to threads. Next will be making Replies work like nice objects." />
     <MESSAGE value="Reply is now a more sensible object. Reply physics needs tweaks, and lines need to be re-drawn." />
     <MESSAGE value="Canvas support. Stuff is still a bit broken though." />
-    <option name="LAST_COMMIT_MESSAGE" value="Canvas support. Stuff is still a bit broken though." />
+    <MESSAGE value="Fixed replies. All looks pretty good now." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed replies. All looks pretty good now." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -461,13 +466,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/winchatty.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="138" column="19" selection-start="5646" selection-end="5646" vertical-scroll-proportion="0.0" vertical-offset="2063" max-vertical-offset="5763">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index2.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="20" column="17" selection-start="530" selection-end="530" vertical-scroll-proportion="-11.461538" vertical-offset="42" max-vertical-offset="867">
@@ -475,9 +473,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/winchatty.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="143" column="6" selection-start="5837" selection-end="5837" vertical-scroll-proportion="0.0" vertical-offset="2063" max-vertical-offset="5763">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/chatty.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="53" selection-start="2769" selection-end="2769" vertical-scroll-proportion="0.42666668" vertical-offset="789" max-vertical-offset="5933">
+        <state line="138" column="43" selection-start="5228" selection-end="5228" vertical-scroll-proportion="0.5288889" vertical-offset="1870" max-vertical-offset="6239">
           <folding />
         </state>
       </provider>

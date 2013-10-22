@@ -79,9 +79,9 @@ $(function () {
         this.dot = paper.circle(this.position.x, this.position.y, this.size());
         this.path = paper.path();
     }
-    Reply.prototype.attraction = 0.1;
-    Reply.prototype.repulsion = 100;
-    Reply.prototype.damping = 0.3;
+    Reply.prototype.attraction = 0.01;
+    Reply.prototype.repulsion = 7;
+    Reply.prototype.damping = 0.99;
     Reply.prototype.mass = function () {
         return 1;
     };
@@ -107,7 +107,11 @@ $(function () {
         });
         this.dot.mousedown(function(e) {
             postRef.isHovered = false;
-            Post.prototype.selectedPost = (postRef.isSelected() ? null : postRef); // a toggle
+            if (postRef.isSelected()) {
+                postRef.deselect();
+            } else {
+                postRef.select();
+            }
             e.preventDefault();
         });
     }
@@ -131,6 +135,19 @@ $(function () {
     Post.prototype.isSelected = function () {
         assert(this !== null);
         return this === this.selectedPost;
+    };
+    Post.prototype.deselect = function () {
+        this.replyList.forEach(function (reply) {
+            reply.path.remove();
+            reply.dot.remove();
+        });
+        Post.prototype.selectedPost = null;
+    };
+    Post.prototype.select = function () {
+        if (Post.prototype.selectedPost !== null) {
+            Post.prototype.selectedPost.deselect();
+        }
+        Post.prototype.selectedPost = this;
     };
     Post.prototype.backgroundColour = function () {
         var bgcolour = "black";
@@ -269,6 +286,7 @@ $(function () {
         for (var i = 1; i < tree.replies.length; i++) { // start at i=1 deliberately to skip root, handled above
             var reply = new Reply(),
                 delta = tree.replies[i].depth - stack.length;
+            reply.parent = stack.front();
             $.extend(reply, tree.replies[i]);
             if (delta > 0) {
                 assert(delta === 1);
@@ -278,7 +296,7 @@ $(function () {
                 stack.pop();
                 delta++;
             }
-            reply.parent = stack.front();
+
             stack.front().children.push(reply); // build the tree
             replies.push(reply); // build the list
         }
