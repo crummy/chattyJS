@@ -5,7 +5,7 @@ $(function () {
     var Vector2 = function _Vector2(x, y) {
         this.x = x === undefined ? 0 : x;
         this.y = y === undefined ? 0 : y;
-    }
+    };
     // Additional functionality to Array, used if you want to treat it like a stack.
     // Returns the last .push()'d entry... well technically just the last entry which hopefully is the last pushed.
     Array.prototype.front = function () {
@@ -35,13 +35,13 @@ $(function () {
         this.div = jQuery('<div/>')
             .addClass('reply')
             .appendTo('#chatty');
-    }
+    };
     Reply.prototype.attraction = 0.01;
     Reply.prototype.repulsion = 600;
     Reply.prototype.damping = 0.3;
     Reply.prototype.mass = function () {
         return 1;
-    }
+    };
 
 
     var Post = function _Post() {
@@ -63,7 +63,7 @@ $(function () {
             }).mouseleave(function () {
                 postRef.isHovered = false;
             });
-    }
+    };
     Post.prototype.bounds = new Vector2(800, 600);
     Post.prototype.baseSize = 8;
     Post.prototype.hoveredSizeMultiplier = 2;
@@ -143,33 +143,32 @@ $(function () {
         }
     };
     Post.prototype.updateDone = function () {
-            var replyList = this.threadTree.selectedPost.replyList;
-            replyList.forEach(function (replyA) {
-                var netVelocity = new Vector2();
-                replyList.forEach(function (replyB) {
-                    if (replyA === replyB) {
-                        return;
-                    }
-                    var repulsion = repulseFrom.call(replyA, replyB),
-                        attraction = new Vector2();
-                    if ($.inArray(replyB, replyA.children) > -1 || $.inArray(replyA, replyB.children) > -1) {
-                        attraction = attractTo.call(replyA, replyB);
-                    }
-                    netVelocity.x += repulsion.x + attraction.x;
-                    netVelocity.y += repulsion.y + attraction.y;
-                });
-                if (replyA === this.threadTree.selectedPost.replyTree) { // if root post
-                    replyA.position = this.position;
-                } else {
-                    replyA.position.x += netVelocity.x * replyA.damping;
-                    replyA.position.y += netVelocity.y * replyA.damping;
+        var replyList = this.threadTree.selectedPost.replyList;
+        replyList.forEach(function (replyA) {
+            var netVelocity = new Vector2();
+            replyList.forEach(function (replyB) {
+                if (replyA === replyB) {
+                    return;
                 }
-                $(replyA.div).css({
-                    'top':  replyA.position.y,
-                    'left': replyA.position.x
-                });
+                var repulsion = repulseFrom.call(replyA, replyB),
+                    attraction = new Vector2();
+                if ($.inArray(replyB, replyA.children) > -1 || $.inArray(replyA, replyB.children) > -1) {
+                    attraction = attractTo.call(replyA, replyB);
+                }
+                netVelocity.x += repulsion.x + attraction.x;
+                netVelocity.y += repulsion.y + attraction.y;
             });
-        }
+            if (replyA === this.threadTree.selectedPost.replyTree) { // if root post
+                replyA.position = this.position;
+            } else {
+                replyA.position.x += netVelocity.x * replyA.damping;
+                replyA.position.y += netVelocity.y * replyA.damping;
+            }
+            $(replyA.div).css({
+                'top':  replyA.position.y,
+                'left': replyA.position.x
+            });
+        });
     };
 
     // these generic-ish functions should be able to operate on both replies and posts
@@ -283,10 +282,7 @@ $(function () {
     });
 
     var WinChattyStory = function (story_data) {
-        if (story_data === undefined) {
-            console.error("A story needs data");
-            return false;
-        }
+        assert(story_data === undefined, "A story needs data");
         this.story_data = story_data;
         this.args = ["ChattyService.getStory", story_data.story_id, 1];
         this.callback = this.storySuccess;

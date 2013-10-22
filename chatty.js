@@ -1,5 +1,5 @@
 $(function () {
-    var FRAMERATE = 1000 / 30;
+    var framerate = 1000 / 30;
 
     // Simple little Vector2 class for physics calculations
     function Vector2(x, y) {
@@ -42,7 +42,7 @@ $(function () {
             });
             postA.update(netVelocity);
         });
-    };
+    }
 
     // client for winchatty API. used to get chatty title, post data
     // browse winchatty here: http://winchatty.com/service/browser/
@@ -76,16 +76,18 @@ $(function () {
         this.children = [];
         this.position = new Vector2(Math.random() * Post.prototype.bounds.x, Math.random() * Post.prototype.bounds.y);
         this.velocity = new Vector2(0, 0);
-        this.div = jQuery('<div/>')
-            .addClass('reply')
-            .appendTo('#chatty');
+        this.dot = paper.circle(this.position.x, this.position.y, this.size());
+        this.path = paper.path();
     }
-    Reply.prototype.attraction = 0.01;
-    Reply.prototype.repulsion = 600;
+    Reply.prototype.attraction = 0.1;
+    Reply.prototype.repulsion = 60;
     Reply.prototype.damping = 0.3;
     Reply.prototype.mass = function () {
         return 1;
-    }
+    };
+    Reply.prototype.size = function () {
+        return 4;
+    };
 
 
     function Post() {
@@ -95,18 +97,19 @@ $(function () {
         this.replyTree = null;
         this.velocity = new Vector2(0, 0);
         this.isHovered = false;
-        this.div = jQuery('<div/>')
-            .addClass('post')
-            .appendTo('#chatty')
-            .click(function (e) {
-                postRef.isHovered = false;
-                Post.prototype.selectedPost = (postRef.isSelected() ? null : postRef); // a toggle
-                e.preventDefault();
-            }).mouseenter(function () {
-                if (!postRef.selected) { postRef.isHovered = true; }
-            }).mouseleave(function () {
-                postRef.isHovered = false;
-            });
+        this.dot = paper.circle(this.position.x, this.position.y, this.size());
+        this.dot.attr("fill", "#f00");
+        this.dot.mouseover(function() {
+            if (!postRef.selected) { postRef.isHovered = true; }
+        });
+        this.dot.mouseout(function() {
+            postRef.isHovered = false;
+        });
+        this.dot.mousedown(function(e) {
+            postRef.isHovered = false;
+            Post.prototype.selectedPost = (postRef.isSelected() ? null : postRef); // a toggle
+            e.preventDefault();
+        });
     }
     Post.prototype.bounds = new Vector2(800, 600);
     Post.prototype.baseSize = 8;
@@ -119,7 +122,8 @@ $(function () {
     Post.prototype.selectedPost = null;
     Post.prototype.size = function () {
         var multiplier = (this.isSelected() ? this.selectedSizeMultiplier : (this.isHovered ? this.hoveredSizeMultiplier : 1));
-        return this.baseSize * multiplier + Math.sqrt(this.reply_count);
+        var repliesModifier = (this.reply_count ? Math.sqrt(this.reply_count) : 0);
+        return this.baseSize * multiplier + repliesModifier;
     };
     Post.prototype.mass = function () {
         return this.baseMass + 0.1 * Math.sqrt(this.reply_count);
@@ -166,14 +170,13 @@ $(function () {
         }
 
         // redraw
-        $(this.div).css({
-            'top':  this.position.y,
-            'left': this.position.x,
-            'background-color': this.backgroundColour(),
-            'width': this.size(),
-            'height': this.size()
-        })
-            .fadeTo(0, this.getOpacity());
+        this.dot.attr({
+            'cx': this.position.x,
+            'cy': this.position.y,
+            'fill': this.backgroundColour(),
+            'r': this.size(),
+            'fill-opacity': this.getOpacity()
+        });
 
         if (this.isSelected()) {
             this.updateReplies();
@@ -200,22 +203,27 @@ $(function () {
                     }
                     var repulsion = repulseFrom.call(replyA, replyB),
                         attraction = new Vector2(0, 0);
-                    if ($.inArray(replyB, replyA.children) > -1 || $.inArray(replyA, replyB.children) > -1) {
+                    //if (replyA.parent === replyB || replyB.parent === replyA) {
                         attraction = attractTo.call(replyA, replyB);
-                    }
+                    //}
                     netVelocity.x += repulsion.x + attraction.x;
                     netVelocity.y += repulsion.y + attraction.y;
                 });
-                if (replyA === this.replyTree) { // if root post
-                    replyA.position = this.position;
+                if (replyA.parent === null) { // if root post
+                    replyA.position = Post.selectedPost.position;
                 } else {
                     replyA.position.x += netVelocity.x * replyA.damping;
                     replyA.position.y += netVelocity.y * replyA.damping;
                 }
-                $(replyA.div).css({
-                    'top':  replyA.position.y,
-                    'left': replyA.position.x
+                replyA.dot.attr({
+                    'cx': replyA.position.x,
+                    'cy': replyA.position.y
                 });
+                if (replyA.parent !== null) {
+                    var path = "M" + replyA.position.x + " " + replyA.position.y +
+                               "L" + replyA.parent.position.x + " " + replyA.parent.position.y;
+                    replyA.path.attr("path", path);
+                }
             });
         }
     };
@@ -254,6 +262,7 @@ $(function () {
         var stack = [],
             replies = [],
             root = new Reply();
+        root.parent = null;
         $.extend(root, tree.replies[0]);
         stack.push(root);
         for (var i = 1; i < tree.replies.length; i++) { // start at i=1 deliberately to skip root, handled above
@@ -268,6 +277,7 @@ $(function () {
                 stack.pop();
                 delta++;
             }
+            reply.parent = stack.front();
             stack.front().children.push(reply); // build the tree
             replies.push(reply); // build the list
         }
@@ -314,6 +324,8 @@ $(function () {
         "height": Post.prototype.bounds.y,
         "width": Post.prototype.bounds.x
     });
+
+    var paper = Raphael("chatty");
 
     $('input[name=repulsion]').val(Post.prototype.repulsion);
     $('input[name=attraction]').val(Post.prototype.attraction);
