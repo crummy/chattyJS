@@ -80,7 +80,7 @@ $(function () {
         this.path = paper.path();
     }
     Reply.prototype.attraction = 0.1;
-    Reply.prototype.repulsion = 60;
+    Reply.prototype.repulsion = 100;
     Reply.prototype.damping = 0.3;
     Reply.prototype.mass = function () {
         return 1;
@@ -203,14 +203,14 @@ $(function () {
                     }
                     var repulsion = repulseFrom.call(replyA, replyB),
                         attraction = new Vector2(0, 0);
-                    //if (replyA.parent === replyB || replyB.parent === replyA) {
+                    if (replyA.parent === replyB || replyB.parent === replyA) {
                         attraction = attractTo.call(replyA, replyB);
-                    //}
+                    }
                     netVelocity.x += repulsion.x + attraction.x;
                     netVelocity.y += repulsion.y + attraction.y;
                 });
                 if (replyA.parent === null) { // if root post
-                    replyA.position = Post.selectedPost.position;
+                    replyA.position = Post.prototype.selectedPost.position;
                 } else {
                     replyA.position.x += netVelocity.x * replyA.damping;
                     replyA.position.y += netVelocity.y * replyA.damping;
@@ -265,6 +265,7 @@ $(function () {
         root.parent = null;
         $.extend(root, tree.replies[0]);
         stack.push(root);
+        replies.push(root);
         for (var i = 1; i < tree.replies.length; i++) { // start at i=1 deliberately to skip root, handled above
             var reply = new Reply(),
                 delta = tree.replies[i].depth - stack.length;
