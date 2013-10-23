@@ -1,4 +1,5 @@
 $(function () {
+    'use strict';
     var framerate = 1000 / 30;
 
     // Simple little Vector2 class for physics calculations
