@@ -31,7 +31,7 @@ $(function () {
                 }
                 var repulsion = new Vector2(0, 0),
                     attraction = new Vector2(0, 0),
-                    gravity = applyGravity.call(postA, postB);
+                    gravity = applyGravity.call(postA);
                 if (postA.category === postB.category) {
                     attraction = attractTo.call(postA, postB);
                 }
@@ -80,8 +80,8 @@ $(function () {
         this.dot = paper.circle(this.position.x, this.position.y, this.size());
         this.path = paper.path();
     }
-    Reply.prototype.attraction = 0.01;
-    Reply.prototype.repulsion = 7;
+    Reply.prototype.attraction = 0.1;
+    Reply.prototype.repulsion = 70;
     Reply.prototype.damping = 0.99;
     Reply.prototype.mass = function () {
         return 1;
@@ -230,8 +230,9 @@ $(function () {
                 if (replyA.parent === null) { // if root post
                     replyA.position = Post.prototype.selectedPost.position;
                 } else {
-                    replyA.position.x += netVelocity.x * replyA.damping;
-                    replyA.position.y += netVelocity.y * replyA.damping;
+                    var gravity = applyGravity.call(replyA, Post.prototype.selectedPost.position);
+                    replyA.position.x += (netVelocity.x + gravity.x) * replyA.damping;
+                    replyA.position.y += (netVelocity.y + gravity.y) * replyA.damping;
                 }
                 replyA.dot.attr({
                     'cx': replyA.position.x,
@@ -261,8 +262,8 @@ $(function () {
         repulsion.y = (this.repulsion * (this.position.y - that.position.y) / rsq);
         return repulsion;
     };
-    var applyGravity = function () {
-        var centerOfGravity = new Vector2(this.bounds.x / 2, this.bounds.y / 2),
+    var applyGravity = function (center) {
+        var centerOfGravity = (center ? center : new Vector2(this.bounds.x / 2, this.bounds.y / 2)),
             gravity = new Vector2(0, 0);
         gravity.x = this.attraction * (centerOfGravity.x - this.position.x);
         gravity.y = this.attraction * (centerOfGravity.y - this.position.y);
@@ -340,12 +341,29 @@ $(function () {
         }
     );
 
+
     $('#chatty').css({
         "height": Post.prototype.bounds.y,
         "width": Post.prototype.bounds.x
     });
 
     var paper = Raphael("chatty");
+
+    // detect mousewheel support in different browsers.
+    // from https://developer.mozilla.org/en-US/docs/Web/Reference/Events/wheel
+    var mwheel = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
+        document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+            "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+    var zoom = 1;
+    $('#chatty').bind(mwheel, function(e) {
+        if (e.originalEvent.wheelDelta > 0) {
+            zoom *= 0.9;
+        } else {
+            zoom *= 1.1;
+        }
+        paper.setViewBox(0, 0, Post.prototype.bounds.x * zoom, Post.prototype.bounds.y * zoom, false);
+        e.stopPropagation();
+    });
 
     $('input[name=repulsion]').val(Post.prototype.repulsion);
     $('input[name=attraction]').val(Post.prototype.attraction);

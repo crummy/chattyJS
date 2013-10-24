@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4cad263c-bb31-44fc-9585-3f62383127a5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/raphael-min.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chatty.js" afterPath="$PROJECT_DIR$/chatty.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -39,7 +38,16 @@
       <file leaf-file-name="chatty.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/chatty.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="347" column="22" selection-start="13538" selection-end="13538" vertical-scroll-proportion="0.647929" vertical-offset="5242" max-vertical-offset="6256">
+            <state line="363" column="8" selection-start="14331" selection-end="14331" vertical-scroll-proportion="0.8109201" vertical-offset="5369" max-vertical-offset="6562">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="102">
               <folding />
             </state>
           </provider>
@@ -48,7 +56,7 @@
       <file leaf-file-name="winchatty.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/winchatty.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5763">
+            <state line="21" column="35" selection-start="869" selection-end="869" vertical-scroll-proportion="0.0" vertical-offset="357" max-vertical-offset="5763">
               <folding />
             </state>
           </provider>
@@ -77,8 +85,8 @@
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/style.css" />
         <option value="code.jquery.com/jquery-2.0.2.js" />
-        <option value="$PROJECT_DIR$/chatty.js" />
         <option value="$PROJECT_DIR$/raphael-min.js" />
+        <option value="$PROJECT_DIR$/chatty.js" />
       </list>
     </option>
   </component>
@@ -133,6 +141,10 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope">
+        <subPane subId="Problems" />
+        <subPane subId="Project Files" />
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -141,26 +153,15 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chattyJS" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chattyJS" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="vcs.Git" />
+    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="ChangesBrowser.SHOW_FLATTEN" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/index.html" />
     <property name="restartRequiresConfirmation" value="false" />
@@ -282,14 +283,14 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1216" height="1896" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32841328" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33463034" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20583333" sideWeight="0.59727734" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.40272263" sideWeight="0.49916667" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.40272263" sideWeight="0.49916667" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.40272263" sideWeight="0.50083333" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -344,24 +345,13 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="176" />
+      <breakpoints-dialog>
+        <breakpoints-dialog />
+      </breakpoints-dialog>
+      <option name="time" value="178" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/chatty.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="50" column="48" selection-start="2074" selection-end="2074" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6256">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/winchatty.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5763">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="http://code.jquery.com/jquery-2.0.2.js">
       <provider selected="true" editor-type-id="httpFileEditor">
         <state />
@@ -419,25 +409,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/winchatty.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5763">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/raphael-min.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="10" column="25854" selection-start="90682" selection-end="90682" vertical-scroll-proportion="0.16765286" vertical-offset="0" max-vertical-offset="1014">
           <folding>
-            <element signature="n#!!doc" expanded="true" />
+            <element signature="n#!!doc" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1027">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/winchatty.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="35" selection-start="869" selection-end="869" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5763">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/jquery.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3676" column="12" selection-start="102044" selection-end="102044" vertical-scroll-proportion="0.8698225" vertical-offset="61406" max-vertical-offset="163047">
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/chatty.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="347" column="22" selection-start="13538" selection-end="13538" vertical-scroll-proportion="0.647929" vertical-offset="5242" max-vertical-offset="6256">
+        <state line="363" column="8" selection-start="14331" selection-end="14331" vertical-scroll-proportion="0.8109201" vertical-offset="5369" max-vertical-offset="6562">
           <folding />
         </state>
       </provider>
