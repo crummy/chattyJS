@@ -15,7 +15,7 @@ html {
     padding: 8px;
     border: 2px solid white;
     background: darkgrey;
-    position:relative;
+    position: relative;
 }
 
 .post {
@@ -60,17 +60,21 @@ html {
     display: none;
 }
 
-.preview .previewbar {
+#preview {
     background-color: #333;
+    width: 800px;
+    padding: 8px;
+    margin: 8px auto;
+    color: lightgray;
 }
 
-.preview .poster {
+#preview_author {
     font-weight: bold;
     color: white;
     padding-right: 8px;
 }
 
-.preview .date {
+#preview_date {
     font-style: italic;
 }
 

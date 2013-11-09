@@ -74,11 +74,17 @@ $(function () {
     }
 
     function Reply() {
+        var replyRef = this;
         this.children = [];
         this.position = new Vector2(Math.random() * Post.prototype.bounds.x, Math.random() * Post.prototype.bounds.y);
         this.velocity = new Vector2(0, 0);
         this.dot = paper.circle(this.position.x, this.position.y, this.size());
+        this.dot.attr("fill", "#000");
         this.path = paper.path();
+        this.dot.mouseover(function(e) {
+            showPreview(replyRef.author, replyRef.preview, replyRef.date);
+            e.preventDefault();
+        });
     }
     Reply.prototype.attraction = 0.1;
     Reply.prototype.repulsion = 70;
@@ -341,6 +347,12 @@ $(function () {
         }
     );
 
+    function showPreview(author, content, date) {
+        $('#preview_author').text(author);
+        $('#preview_content').text(content);
+        $('#preview_date').text(date);
+    }
+
 
     $('#chatty').css({
         "height": Post.prototype.bounds.y,
@@ -361,7 +373,8 @@ $(function () {
         } else {
             zoom *= 1.1;
         }
-        paper.setViewBox(0, 0, Post.prototype.bounds.x * zoom, Post.prototype.bounds.y * zoom, false);
+        var center = new Vector2(Post.prototype.bounds.x, Post.prototype.bounds.y);
+        paper.setViewBox((center.x - center.x*zoom)/2, (center.y - center.y*zoom)/2, center.x * zoom, center.y * zoom, true);
         e.stopPropagation();
     });
 

@@ -6,7 +6,6 @@
     <title>chattyJS by crummynz</title>
 
     <script src='jquery.js'></script>
-    <!--<script src='winchatty.js'></script>-->
     <script src="chatty.js"></script>
     <script src="raphael-min.js"></script>
 
@@ -16,30 +15,10 @@
 <body>
 <h1 id="title">Animated Chatty. If you're seeing this, Javascript is disabled.</h1>
 <div id="chatty"></div>
-<form id="controls" action="#">
-    <table>
-        <tr>
-            <td><label for="repulsion">Repulsion</label></td>
-            <td><input type="text" name="repulsion" id="repulsion" value="" /></td>
-        </tr>
-        <tr>
-            <td><label for="attraction">Attraction</label></td>
-            <td><input type="text" name="attraction" id="attraction" value="" /></td>
-        </tr>
-        <tr>
-            <td><label for="damping">Damping</label></td>
-            <td><input type="text" name="damping" id="damping" value="" /></td>
-        </tr>
-        <tr>
-            <td><label for="baseSize">Base Size</label></td>
-            <td><input type="text" name="baseSize" id="baseSize" value="" /></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><input type="submit" name="submitChanges" value="Apply changes"></td>
-        </tr>
-    </table>
-</form>
+<div id="preview">
+    <span id="preview_author"></span><span id="preview_date"></span>
+    <div id="preview_content"></div>
+</div>
 </body>
 </html>
 
